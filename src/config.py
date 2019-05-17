@@ -2,7 +2,7 @@
 def get_config():
     return  {
             # training parameters
-            'epoch': 100
+            'epoch': 100,
             'batch_size': 4,
 
             # network configurations
