@@ -4,9 +4,8 @@ from torchvision import models
 
 
 class InpaintingLoss(nn.Module):
-    def __init__(self, coef, extractor):
+    def __init__(self, extractor):
         super(InpaintingLoss, self).__init__()
-        self.coef = coef
         self.l1 = nn.L1Loss()
         # default extractor is VGG16
         self.extractor = extractor
@@ -38,12 +37,11 @@ class InpaintingLoss(nn.Module):
             style_loss += self.l1(gram_matrix(feats_out[i]), gram_matrix(feats_gt[i]))
             style_loss += self.l1(gram_matrix(feats_comp[i]), gram_matrix(feats_gt[i]))
 
-        total_loss = self.coef['valid'] * valid_loss \
-                     + self.coef['hole'] * hole_loss \
-                     + self.coef['perc'] * perc_loss \
-                     + self.coef['style'] * style_loss \
-                     + self.coef['tv'] * tv_loss
-        return total_loss
+        return {'valid': valid_loss,
+                'hole': hole_loss,
+                'perc': perc_loss,
+                'style': style_loss,
+                'tv': tv_loss}
 
 
 # The network of extracting the feature for perceptual and style loss
