@@ -105,6 +105,7 @@ class PConvActiv(nn.Module):
 class PConvUNet(nn.Module):
     def __init__(self, in_ch=3, layer_size=6):
         super().__init__()
+        self.freeze_enc_bn = False
         self.layer_size = layer_size
 
         self.enc_1 = PConvActiv(in_ch, 64, 'down-7', bn=False)
@@ -142,6 +143,16 @@ class PConvUNet(nn.Module):
                     feature, update_mask, enc_f.pop(), enc_m.pop())
             
         return feature, mask
+
+    def train(self, mode=True):
+        """
+        Override the default train() to freeze the BN parameters
+        """
+        super().train(mode)
+        if self.freeze_enc_bn:
+            for name, module in self.named_modules():
+                if isinstance(module, nn.BatchNorm2d) and 'enc' in name:
+                    module.eval()
 
 
 if __name__ == '__main__':
