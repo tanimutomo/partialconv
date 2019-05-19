@@ -1,18 +1,44 @@
 
 def get_config():
     return  {
+            # The using GPU ID
+            'cuda_id': 0,
+            # whether you use comet-ml for visualizing the training procedure
+            'comet': False,
+            # The Running mode ('train' or 'test')
+            'mode': 'train',
+            # fine-tuning
+            'finetune': False,
+            # The state path which you want to resume the training
+            'resume': False,
+            # The interval step for viaulizing the output images
+            'vis_interval': 5000,
+            # The interval step for saving the model
+            'save_model_interval': 50000,
+            # The interval step for printing the losses to standard output line
+            'log_interval': 100,
+
             # training parameters
-            'epoch': 100,
+            'max_iter': 10,
             'batch_size': 4,
-
-            # network configurations
+            # UNet layer size
             'layer_size': 6,
-
-            # data normalization parameters
-            'MEAN': [0.485, 0.456, 0.406],
-            'STD': [0.229, 0.224, 0.225],
-
             # the loss coefficients
-            'loss_coef': {'valid': 1.0, 'hole': 6.0, 'tv': 0.1, 'perc': 0.05, 'style': 120.0}
+            'loss_coef': {'valid': 1.0, 'hole': 6.0, 'tv': 0.1, 'perc': 0.05, 'style': 120.0},
+            # Optimization Setting
+            'optim': 'Adam',
+            'initial_lr': 2e-4,
+            'finetune_lr': 5e-5,
+            'momentum': 0,
+            'weight_decay': 0,
 
+            # The directory settings
+            'img_root': 'data',
+            'mask_root': 'data/mask',
+            'save_dir': 'data/ckpt',
+
+            # the information of comet-ml
+            'api_key': 'xK18bJy5xiPuPf9Dptr43ZuMk',
+            'project_name': 'partialconv-places2',
+            'workspace': 'tanimutomo'
             }
