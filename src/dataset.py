@@ -15,7 +15,7 @@ class Places2(Dataset):
         if data == 'train':
             self.paths = glob('{}/data_large/**/*.jpg'.format(img_root), recursive=True)
         else:
-            self.paths = glob('{}/{}_large/*.jpg'.format(img_root, split))
+            self.paths = glob('{}/{}_large/*.jpg'.format(img_root, data))
         
         self.mask_paths = glob('{}/*.jpg'.format(mask_root))
         self.N_mask = len(self.mask_paths)
