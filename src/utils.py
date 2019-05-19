@@ -1,13 +1,6 @@
 import torch
 import torch.nn as nn
 
-def init_xavier(m):
-    if type(m) == nn.Linear:
-        torch.nn.init.xavier_uniform_(m.weight)
-        try:
-            truncated_normal(m.bias)
-        except:
-            pass
 
 class Config(dict):
     def __init__(self, config):
@@ -19,3 +12,31 @@ class Config(dict):
 
         return None
 
+
+def get_state_dict_on_cpu(obj):
+    cpu_device = torch.device('cpu')
+    state_dict = obj.state_dict()
+    for key in state_dict.keys():
+        state_dict[key] = state_dict[key].to(cpu_device)
+    return state_dict
+
+
+def save_ckpt(ckpt_name, models, optimizers, n_iter):
+    ckpt_dict = {'n_iter': n_iter}
+    for prefix, model in models:
+        ckpt_dict[prefix] = get_state_dict_on_cpu(model)
+
+    for prefix, optimizer in optimizers:
+        ckpt_dict[prefix] = optimizer.state_dict()
+    torch.save(ckpt_dict, ckpt_name)
+
+
+def load_ckpt(ckpt_name, models, optimizers=None):
+    ckpt_dict = torch.load(ckpt_name)
+    for prefix, model in models:
+        assert isinstance(model, nn.Module)
+        model.load_state_dict(ckpt_dict[prefix], strict=False)
+    if optimizers is not None:
+        for prefix, optimizer in optimizers:
+            optimizer.load_state_dict(ckpt_dict[prefix])
+    return ckpt_dict['n_iter']
