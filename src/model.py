@@ -147,6 +147,8 @@ class PConvUNet(nn.Module):
     def train(self, mode=True):
         """
         Override the default train() to freeze the BN parameters
+        In initial training, BN set to True
+        In fine-tuning stage, BN set to False
         """
         super().train(mode)
         if self.freeze_enc_bn:
