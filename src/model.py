@@ -20,6 +20,8 @@ class PartialConv2d(nn.Conv2d):
         self.update_mask = None
         # Define the mask ratio (sum(1) / sum(M))
         self.mask_ratio = None
+        # Initialize the weights for image convolution
+        torch.nn.init.xavier_uniform_(self.weight)
 
     def forward(self, input, mask):
         with torch.no_grad():
@@ -158,6 +160,7 @@ class PConvUNet(nn.Module):
 
 
 if __name__ == '__main__':
+    from utils import init_xavier
     size = (1, 3, 512, 512)
     input = torch.ones(size)
     mask = torch.ones(size)
@@ -171,12 +174,16 @@ if __name__ == '__main__':
     loss = criterion(output, torch.randn(size))
     loss.backward()
 
-    print(input.grad[0])
-    print(conv.weight[0])
+    # print(input.grad[0])
     assert (torch.sum(torch.isnan(conv.weight.grad)).item() == 0)
     assert (torch.sum(torch.isnan(conv.bias.grad)).item() == 0)
 
 
     model = PConvUNet()
+    before = model.enc_5.conv.weight[0][0]
+    print(before)
+    # model.apply(init_xavier)
+    # after = model.enc_5.conv.weight[0][0]
+    # print(after - before)
     output, out_mask = model(input, mask)
 
