@@ -20,6 +20,7 @@ device = torch.device('cuda:{}'.format(config.cuda_id)
                       if torch.cuda.is_available() else 'cpu')
 
 # Define the model
+print('Loading the Model...')
 model = PConvUNet(layer_size=config.layer_size).to(device)
 
 # Data Transformation
@@ -32,6 +33,7 @@ mask_tf = transforms.Compose([
             ])
 
 # Define the Validation set
+print('Loading the Validation Dataset...')
 dataset_val = Places2(config.data_root,
                       img_tf,
                       mask_tf,
@@ -41,6 +43,7 @@ dataset_val = Places2(config.data_root,
 if config.mode == 'train':
     # set the comet-ml
     if config.comet:
+        print('Connecting to Comet ML...')
         experiment = Experiment(api_key=config.api_key,
                                 project_name=config.project_name,
                                 workspace=config.workspace)
@@ -49,6 +52,7 @@ if config.mode == 'train':
         experiment = None
 
     # Define the Places2 Dataset and Data Loader
+    print('Loading the Training Dataset...')
     dataset_train = Places2(config.data_root,
                             img_tf,
                             mask_tf,
@@ -70,6 +74,7 @@ if config.mode == 'train':
 
     start_iter = 0
     if config.resume:
+        print('Loading the trained params and the state of optimizer...')
         start_iter = load_ckpt(config.resume,
                                [('model', model)],
                                [('optimizer', optimizer)])
