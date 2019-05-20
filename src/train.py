@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from .utils import save_ckpt
+from .utils import save_ckpt, to_item
 from .evaluate import evaluate
 
 
@@ -25,10 +25,10 @@ class Trainer:
     def iterate(self, num_iter):
         print('Start the training')
         for step, (input, mask, gt) in enumerate(self.dataloader_train):
-            loss_dict, loss = self.train(step+self.stepped, input, mask, gt)
+            loss_dict = self.train(step+self.stepped, input, mask, gt)
             # report the loss
-            if step % self.config.print_interval == 0:
-                self.report(step+self.stepped, loss_dict, loss)
+            if step % self.config.report_interval == 0:
+                self.report(step+self.stepped, loss_dict)
 
             # evaluation
             if (step+self.stepped + 1) % self.config.vis_interval == 0:
@@ -71,17 +71,17 @@ class Trainer:
         loss.backward()
         self.optimizer.step()
 
-        return loss_dict, loss
+        loss_dict['total'] = loss
+        return to_item(loss_dict)
         
-    def report(self, step, loss_dict, loss):
-        # if self.experiment:
-        #     experiment.log_metrics(
+    def report(self, step, loss_dict):
+        self.experiment.log_metrics(loss_dict, step)
         print('STEP:', step,
-              ' / Valid Loss:', loss_dict['valid'].item(),
-              ' / Hole Loss:', loss_dict['hole'].item(),
-              ' / TV Loss:', loss_dict['tv'].item(),
-              ' / Perc Loss:', loss_dict['perc'].item(),
-              ' / Style Loss:', loss_dict['style'].item(),
-              ' / TOTAL LOSS:', loss.item())
+              ' / Valid Loss:', loss_dict['valid'],
+              ' / Hole Loss:', loss_dict['hole'],
+              ' / TV Loss:', loss_dict['tv'],
+              ' / Perc Loss:', loss_dict['perc'],
+              ' / Style Loss:', loss_dict['style'],
+              ' / TOTAL LOSS:', loss_dict['total'])
 
 
