@@ -83,6 +83,6 @@ class Trainer:
               ' / Style Loss:', loss_dict['style'],
               ' / TOTAL LOSS:', loss_dict['total'])
         if self.experiment is not None:
-            self.experiment.log_metrics(loss_dict, step)
+            self.experiment.log_metrics(loss_dict, step=step)
 
 

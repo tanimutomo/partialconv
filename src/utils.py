@@ -7,7 +7,7 @@ def to_items(dic):
 
 
 def _to_item(item):
-    return item[0], float(item[1].item()[0])
+    return item[0], item[1].item()
 
 
 class Config(dict):
