@@ -23,10 +23,12 @@ class Trainer:
         self.experiment = experiment
         
     def iterate(self, num_iter):
-        for step, (input, mask, gt) in enumerate(dataloader_train):
+        print('Start the training')
+        for step, (input, mask, gt) in enumerate(self.dataloader_train):
             loss_dict, loss = train(step+self.stepped, input, mask, gt)
             # report the loss
-            self.report_loss(step+self.stepped, loss_dict, loss)
+            if step % self.config.print_interval == 0:
+                self.report_loss(step+self.stepped, loss_dict, loss)
 
             # evaluation
             if (step+self.stepped + 1) % self.config.vis_interval == 0:
@@ -37,7 +39,8 @@ class Trainer:
                               self.experiment)
 
             # save the model
-            if (step+self.stepped + 1) % self.config.save_model_interval == 0 or (i + 1) == self.config.max_iter:
+            if (step+self.stepped + 1) % self.config.save_model_interval == 0 \
+                    or (i + 1) == self.config.max_iter:
                 save_ckpt('{}/models/{}.pth'.format(self.config.ckpt, step+self.stepped + 1),
                           [('model', self.model)],
                           [('optimizer', self.optimizer)],
