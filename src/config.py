@@ -17,6 +17,8 @@ def get_config():
             'save_model_interval': 50000,
             # The interval step for printing the losses to standard output line
             'log_interval': 100,
+            # The print the losses interval
+            'print_interval': 100,
 
             # training parameters
             'max_iter': 10,
