@@ -62,9 +62,9 @@ class Trainer:
         output, _ = self.model(input, mask)
         loss_dict = self.criterion(input, mask, output, gt)
         loss = 0.0
-        for key, coef in self.config.loss_coef.items():
-            value = coef * loss_dict[key]
-            loss += value
+        for key, val in loss_dict.items():
+            coef = getattr(self.config, '{}_coef'.format(key))
+            loss += coef * val
 
         # updates the model's params
         self.optimizer.zero_grad()
@@ -72,10 +72,9 @@ class Trainer:
         self.optimizer.step()
 
         loss_dict['total'] = loss
-        return to_item(loss_dict)
+        return to_items(loss_dict)
         
     def report(self, step, loss_dict):
-        self.experiment.log_metrics(loss_dict, step)
         print('STEP:', step,
               ' / Valid Loss:', loss_dict['valid'],
               ' / Hole Loss:', loss_dict['hole'],
@@ -83,5 +82,7 @@ class Trainer:
               ' / Perc Loss:', loss_dict['perc'],
               ' / Style Loss:', loss_dict['style'],
               ' / TOTAL LOSS:', loss_dict['total'])
+        if self.experiment is not None:
+            self.experiment.log_metrics(loss_dict, step)
 
 
