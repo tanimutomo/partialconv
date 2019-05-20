@@ -33,8 +33,7 @@ def get_config():
             'weight_decay': 0,
 
             # The directory settings
-            'img_root': 'data',
-            'mask_root': 'data/mask',
+            'data_root': 'data',
             'ckpt': 'data/ckpt',
 
             # the information of comet-ml

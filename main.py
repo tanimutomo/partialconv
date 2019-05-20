@@ -32,8 +32,7 @@ mask_tf = transforms.Compose([
             ])
 
 # Define the Validation set
-dataset_val = Places2(config.img_root,
-                      config.mask_root,
+dataset_val = Places2(config.data_root,
                       img_tf,
                       mask_tf,
                       data='val')
@@ -50,8 +49,7 @@ if config.mode == 'train':
         experiment = None
 
     # Define the Places2 Dataset and Data Loader
-    dataset_train = Places2(config.img_root,
-                            config.mask_root,
+    dataset_train = Places2(config.data_root,
                             img_tf,
                             mask_tf,
                             data='train')
