@@ -7,4 +7,6 @@ services:
     build:
       context: .
       dockerfile: gpu.Dockerfile
-    image: tf_gpu_sample
+    image: tanimu/partialconv
+    container_name: experiment
+
