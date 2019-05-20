@@ -35,7 +35,7 @@ def get_config():
             # The directory settings
             'img_root': 'data',
             'mask_root': 'data/mask',
-            'save_dir': 'data/ckpt',
+            'ckpt': 'data/ckpt',
 
             # the information of comet-ml
             'api_key': 'xK18bJy5xiPuPf9Dptr43ZuMk',
