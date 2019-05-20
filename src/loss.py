@@ -15,8 +15,12 @@ class InpaintingLoss(nn.Module):
         comp = mask * input + (1 - mask) * output
 
         # Total Vision Regularization
-        tv_loss = torch.sum(torch.abs(input[:, :, :, :-1] - input[:, :, :, 1:])) \
-                  + torch.sum(torch.abs(input[:, :, :-1, :] - input[:, :, 1:, :]))
+        tv_loss = (torch.mean(torch.abs(comp[:, :, :, :-1] - comp[:, :, :, 1:])) \
+                  + torch.mean(torch.abs(comp[:, :, :, 1:] - comp[:, :, :, :-1])) \
+                  + torch.mean(torch.abs(comp[:, :, :-1, :] - comp[:, :, 1:, :])) \
+                  + torch.mean(torch.abs(comp[:, :, 1:, :] - comp[:, :, :-1, :]))) / 2
+
+
 
         # Hole Pixel Loss
         hole_loss = self.l1((1-mask) * output, (1-mask) * gt)
