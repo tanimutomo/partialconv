@@ -75,13 +75,12 @@ class Trainer:
         return to_items(loss_dict)
         
     def report(self, step, loss_dict):
-        print('STEP:', step,
-              ' / Valid Loss:', loss_dict['valid'],
-              ' / Hole Loss:', loss_dict['hole'],
-              ' / TV Loss:', loss_dict['tv'],
-              ' / Perc Loss:', loss_dict['perc'],
-              ' / Style Loss:', loss_dict['style'],
-              ' / TOTAL LOSS:', loss_dict['total'])
+        print('[STEP: {:>6}] | Valid Loss: {:.6f} | Hole Loss: {:.6f}'\
+                '| TV Loss: {:.6f} | Perc Loss: {:.6f}'\
+                '| Style Loss: {:.6f} | Total Loss: {:.6f}'.format(
+                        step, loss_dict['valid'], loss_dict['hole'],
+                        loss_dict['tv'], loss_dict['perc'],
+                        loss_dict['style'], loss_dict['total']))
         if self.experiment is not None:
             self.experiment.log_metrics(loss_dict, step=step)
 
