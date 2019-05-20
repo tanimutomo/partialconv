@@ -15,7 +15,7 @@ def evaluate(model, dataset, device, filename, experiment=None):
     output = output.to(torch.device('cpu'))
     output_comp = mask * image + (1 - mask) * output
 
-    grid = make_grid(torch.cat(image, mask, output, output_comp, gt), dim=0)
+    grid = make_grid(torch.cat([image, mask, output, output_comp, gt], dim=0))
     save_image(grid, filename)
-    if experiment:
-        experiment.log_image(grid, filename)
+    if experiment is not None:
+        experiment.log_image(filename, filename)
