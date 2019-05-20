@@ -18,10 +18,10 @@ def get_config():
             # The interval step for printing the losses to standard output line
             'log_interval': 100,
             # The print the losses interval
-            'print_interval': 100,
+            'report_interval': 100,
 
             # training parameters
-            'max_iter': 10,
+            'max_iter': 1000000,
             'batch_size': 4,
             # UNet layer size
             'layer_size': 6,
@@ -39,7 +39,7 @@ def get_config():
             'ckpt': 'ckpt',
 
             # the information of comet-ml
-            'api_key': 'xK18bJy5xiPuPf9Dptr43ZuMk',
-            'project_name': 'partialconv-places2',
-            'workspace': 'tanimutomo'
+            'api_key': '',
+            'project_name': '',
+            'workspace': ''
             }
