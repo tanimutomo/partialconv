@@ -35,12 +35,13 @@ class Trainer:
                 # set the model to evaluation mode
                 self.model.eval()
                 self.evaluate(self.model, self.dataset_val, self.device,
-                              '{}/train_out/test_{}.png'.format(self.config.ckpt, step+self.stepped),
+                              '{}/val_vis/{}.png'.format(self.config.ckpt, step+self.stepped),
                               self.experiment)
 
             # save the model
             if (step+self.stepped + 1) % self.config.save_model_interval == 0 \
                     or (step + 1) == self.config.max_iter:
+                print('Saving the model...')
                 save_ckpt('{}/models/{}.pth'.format(self.config.ckpt, step+self.stepped + 1),
                           [('model', self.model)],
                           [('optimizer', self.optimizer)],
