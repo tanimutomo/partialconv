@@ -7,7 +7,7 @@ def to_items(dic):
 
 
 def _to_item(item):
-    return item[0], item[1].item()
+    return item[0], float(item[1].item()[0])
 
 
 class Config(dict):
@@ -19,6 +19,24 @@ class Config(dict):
             return self._conf[name]
 
         return None
+
+
+def conf_to_param(config: dict) -> dict:
+    dind_keys = []
+    rm_keys = []
+    for key, val in config.items():
+        if isinstance(val, dict):
+            dind_keys.append(key)
+        elif not type(val) in [float, int, bool, str]:
+            rm_keys.pop(key)
+
+    for target in dind_keys:
+        val = config.pop(target)
+        config.update(val)
+    for target in rm_keys:
+        del config[targe]
+
+    return config
 
 
 def get_state_dict_on_cpu(obj):
