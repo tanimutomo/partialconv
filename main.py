@@ -9,12 +9,14 @@ from src.dataset import Places2
 from src.model import PConvUNet
 from src.loss import InpaintingLoss, VGG16FeatureExtractor
 from src.train import Trainer
-from src.utils import Config, load_ckpt
+from src.utils import Config, load_ckpt, create_ckpt_dir
 
 
 # set the config
 config_dict = get_config()
 config = Config(config_dict)
+config.ckpt = create_ckpt_dir()
+print('Check Point is "{}"'.format(config.ckpt))
 
 # Define the used device
 device = torch.device('cuda:{}'.format(config.cuda_id)

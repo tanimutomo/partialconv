@@ -1,5 +1,19 @@
+import os
+import datetime
 import torch
+
 import torch.nn as nn
+
+
+def create_ckpt_dir():
+    now = datetime.datetime.today()
+    ckpt_dir = 'ckpt/{}{}_{}{}_{}'.format(now.month, now.day,
+                                          now.hour, now.minute,
+                                          now.second)
+    os.mkdir(ckpt_dir)
+    os.mkdir(os.path.join(ckpt_dir, 'val_vis'))
+    os.mkdir(os.path.join(ckpt_dir, 'models'))
+    return ckpt_dir
 
 
 def to_items(dic):
