@@ -27,7 +27,7 @@ class Trainer:
         for step, (input, mask, gt) in enumerate(self.dataloader_train):
             loss_dict = self.train(step+self.stepped, input, mask, gt)
             # report the loss
-            if step % self.config.report_interval == 0:
+            if step % self.config.log_interval == 0:
                 self.report(step+self.stepped, loss_dict)
 
             # evaluation
