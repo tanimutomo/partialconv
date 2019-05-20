@@ -2,6 +2,14 @@ import torch
 import torch.nn as nn
 
 
+def to_items(dic):
+    return dict(map(_to_item, dic.items()))
+
+
+def _to_item(item):
+    return item[0], item[1].item()
+
+
 class Config(dict):
     def __init__(self, config):
         self._conf = config
