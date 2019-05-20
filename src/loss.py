@@ -4,8 +4,9 @@ from torchvision import models
 
 
 class InpaintingLoss(nn.Module):
-    def __init__(self, extractor):
+    def __init__(self, extractor, tv_loss='mean'):
         super(InpaintingLoss, self).__init__()
+        self.tv_loss = tv_loss
         self.l1 = nn.L1Loss()
         # default extractor is VGG16
         self.extractor = extractor
@@ -15,7 +16,13 @@ class InpaintingLoss(nn.Module):
         comp = mask * input + (1 - mask) * output
 
         # Total Variation Regularization
-        tv_loss = total_variation_loss(comp, mask)
+        if self.tv_loss == 'sum':
+            tv_loss = total_variation_loss(comp, mask)
+        elif self.tv_loss == 'mean':
+            tv_loss = (torch.mean(torch.abs(comp[:, :, :, :-1] - comp[:, :, :, 1:])) \
+                      + torch.mean(torch.abs(comp[:, :, :, 1:] - comp[:, :, :, :-1])) \
+                      + torch.mean(torch.abs(comp[:, :, :-1, :] - comp[:, :, 1:, :])) \
+                      + torch.mean(torch.abs(comp[:, :, 1:, :] - comp[:, :, :-1, :]))) / 2
 
         # Hole Pixel Loss
         hole_loss = self.l1((1-mask) * output, (1-mask) * gt)
@@ -99,7 +106,7 @@ def gram_matrix(feat):
 
 def dialation_holes(hole_mask):
     b, ch, h, w = hole_mask.shape
-    dilation_conv = nn.Conv2d(ch, ch, 3, padding=1, bias=False).to(device)
+    dilation_conv = nn.Conv2d(ch, ch, 3, padding=1, bias=False).to(hole_mask)
     torch.nn.init.constant_(dilation_conv.weight, 1.0)
     with torch.no_grad():
         output_mask = dilation_conv(hole_mask)

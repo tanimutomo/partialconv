@@ -63,7 +63,8 @@ if config.mode == 'train':
                             data='train')
 
     # Define the Loss fucntion
-    criterion = InpaintingLoss(VGG16FeatureExtractor()).to(device)
+    criterion = InpaintingLoss(VGG16FeatureExtractor(),
+                               tv_loss=config.tv_loss).to(device)
     # Define the Optimizer
     lr = config.finetune_lr if config.finetune else config.initial_lr
     if config.optim == 'Adam':
