@@ -22,7 +22,8 @@ device = torch.device('cuda:{}'.format(config.cuda_id)
 
 # Define the model
 print('Loading the Model...')
-model = PConvUNet(layer_size=config.layer_size).to(device)
+model = PConvUNet(finetune=config.finetune,
+                  layer_size=config.layer_size).to(device)
 
 # Data Transformation
 img_tf = transforms.Compose([

@@ -107,9 +107,9 @@ class PConvActiv(nn.Module):
 
 
 class PConvUNet(nn.Module):
-    def __init__(self, in_ch=3, layer_size=6):
+    def __init__(self, finetune, in_ch=3, layer_size=6):
         super().__init__()
-        self.freeze_enc_bn = False
+        self.freeze_enc_bn = True if finetune else False
         self.layer_size = layer_size
 
         self.enc_1 = PConvActiv(in_ch, 64, 'down-7', bn=False)
