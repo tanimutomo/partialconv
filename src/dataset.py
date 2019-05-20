@@ -6,7 +6,7 @@ from glob import glob
 
 
 class Places2(Dataset):
-    def __init__(self, img_root, mask_root, img_transform, mask_transform, data='train'):
+    def __init__(self, data_root, img_transform, mask_transform, data='train'):
         super(Places2, self).__init__()
         self.img_transform = img_transform
         self.mask_transform = mask_transform
@@ -14,10 +14,11 @@ class Places2(Dataset):
         # get the list of image paths
         if data == 'train':
             self.paths = glob('{}/data_256/**/*.jpg'.format(img_root), recursive=True)
+            self.mask_paths = glob('{}/mask/*.png'.format(mask_root))
         else:
             self.paths = glob('{}/val_256/*.jpg'.format(img_root, data))
+            self.mask_paths = glob('{}/val_mask/*.png'.format(mask_root))
         
-        self.mask_paths = glob('{}/*.png'.format(mask_root))
         self.N_mask = len(self.mask_paths)
 
     def __len__(self):
