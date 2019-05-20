@@ -46,6 +46,9 @@ class Trainer:
                           [('optimizer', self.optimizer)],
                           step+self.stepped + 1)
 
+            if self.config.max_iter >= step:
+                break
+
     def train(self, step, input, mask, gt):
         # set the model to training mode
         self.model.train()
