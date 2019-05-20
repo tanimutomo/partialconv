@@ -13,7 +13,8 @@ from src.utils import Config, load_ckpt
 
 
 # set the config
-config = Config(get_config())
+config_dict = get_config()
+config = Config(config_dict)
 
 # Define the used device
 device = torch.device('cuda:{}'.format(config.cuda_id)
@@ -47,7 +48,7 @@ if config.mode == 'train':
         experiment = Experiment(api_key=config.api_key,
                                 project_name=config.project_name,
                                 workspace=config.workspace)
-        experiment.log_parameters(config)
+        experiment.log_parameters(config_dict)
     else:
         experiment = None
 
