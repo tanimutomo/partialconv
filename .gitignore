@@ -114,3 +114,4 @@ dmypy.json
 *.swp
 *.png
 data/
+ckpt/
