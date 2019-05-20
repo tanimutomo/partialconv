@@ -14,13 +14,8 @@ class InpaintingLoss(nn.Module):
         # Non-hole pixels directly set to ground truth
         comp = mask * input + (1 - mask) * output
 
-        # Total Vision Regularization
-        tv_loss = (torch.mean(torch.abs(comp[:, :, :, :-1] - comp[:, :, :, 1:])) \
-                  + torch.mean(torch.abs(comp[:, :, :, 1:] - comp[:, :, :, :-1])) \
-                  + torch.mean(torch.abs(comp[:, :, :-1, :] - comp[:, :, 1:, :])) \
-                  + torch.mean(torch.abs(comp[:, :, 1:, :] - comp[:, :, :-1, :]))) / 2
-
-
+        # Total Variation Regularization
+        tv_loss = total_variation_loss(comp, mask)
 
         # Hole Pixel Loss
         hole_loss = self.l1((1-mask) * output, (1-mask) * gt)
@@ -100,6 +95,26 @@ def gram_matrix(feat):
     feat_t = feat.transpose(1, 2)
     gram = torch.bmm(feat, feat_t) / (ch * h * w)
     return gram
+
+
+def dialation_holes(hole_mask):
+    b, ch, h, w = hole_mask.shape
+    dilation_conv = nn.Conv2d(ch, ch, 3, padding=1, bias=False).to(device)
+    torch.nn.init.constant_(dilation_conv.weight, 1.0)
+    with torch.no_grad():
+        output_mask = dilation_conv(hole_mask)
+    updated_holes = output_mask != 0
+    return updated_holes.float()
+
+
+def total_variation_loss(image, mask):
+    hole_mask = 1-mask
+    dilated_holes=dialation_holes(hole_mask)
+    colomns_in_Pset=dilated_holes[:, :, :, 1:] * dilated_holes[:, :, :, :-1]
+    rows_in_Pset=dilated_holes[:, :, 1:, :] * dilated_holes[:, :, :-1:, :]
+    loss = torch.sum(torch.abs(colomns_in_Pset*(image[:, :, :, 1:] - image[:, :, :, :-1]))) + \
+        torch.sum(torch.abs(rows_in_Pset*(image[:, :, :1 :] - image[:, :, -1:, :])))
+    return loss
 
 
 if __name__ == '__main__':
