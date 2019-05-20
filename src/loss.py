@@ -81,9 +81,12 @@ class Normalization(nn.Module):
         self.mean = torch.tensor(mean).view(-1, 1, 1)
         self.std = torch.tensor(std).view(-1, 1, 1)
 
-    def forward(self, img):
+    def forward(self, input):
         # normalize img
-        return (img - self.mean) / self.std
+        if self.mean.type() != input.type():
+            self.mean = self.mean.to(input)
+            self.std = self.std.to(input)
+        return (input - self.mean) / self.std
 
 
 # Calcurate the Gram Matrix of feature maps

@@ -25,6 +25,8 @@ class PartialConv2d(nn.Conv2d):
 
     def forward(self, input, mask):
         with torch.no_grad():
+            if self.mask_kernel.type() != input.type():
+                self.mask_kernel = self.mask_kernel.to(input)
             # Create the updated mask for calcurating mask_ratio (sum(1) / sum(M))
             self.update_mask = F.conv2d(mask, self.mask_kernel, bias=None, stride=self.stride, 
                                         padding=self.padding, dilation=self.dilation, groups=1)
