@@ -26,7 +26,7 @@ class Places2(Dataset):
 
     def __getitem__(self, index):
         img = Image.open(self.paths[index])
-        img - self.img_transform(img.convert('RGB'))
+        img = self.img_transform(img.convert('RGB'))
         mask = Image.open(self.mask_paths[random.randint(0, self.N_mask - 1)])
         mask = self.mask_transform(mask.convert('RGB'))
         return img * mask, mask, img
