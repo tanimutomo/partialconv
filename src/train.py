@@ -25,10 +25,10 @@ class Trainer:
     def iterate(self, num_iter):
         print('Start the training')
         for step, (input, mask, gt) in enumerate(self.dataloader_train):
-            loss_dict, loss = train(step+self.stepped, input, mask, gt)
+            loss_dict, loss = self.train(step+self.stepped, input, mask, gt)
             # report the loss
             if step % self.config.print_interval == 0:
-                self.report_loss(step+self.stepped, loss_dict, loss)
+                self.report(step+self.stepped, loss_dict, loss)
 
             # evaluation
             if (step+self.stepped + 1) % self.config.vis_interval == 0:
@@ -40,7 +40,7 @@ class Trainer:
 
             # save the model
             if (step+self.stepped + 1) % self.config.save_model_interval == 0 \
-                    or (i + 1) == self.config.max_iter:
+                    or (step + 1) == self.config.max_iter:
                 save_ckpt('{}/models/{}.pth'.format(self.config.ckpt, step+self.stepped + 1),
                           [('model', self.model)],
                           [('optimizer', self.optimizer)],
@@ -51,9 +51,9 @@ class Trainer:
         self.model.train()
 
         # send the input tensors to cuda
-        input = input.to(device)
-        mask = mask.to(device)
-        gt = gt.to(device)
+        input = input.to(self.device)
+        mask = mask.to(self.device)
+        gt = gt.to(self.device)
 
         # model forward
         output, _ = self.model(input, mask)
