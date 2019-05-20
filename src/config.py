@@ -36,7 +36,7 @@ def get_config():
 
             # The directory settings
             'data_root': 'data',
-            'ckpt': 'data/ckpt',
+            'ckpt': 'ckpt',
 
             # the information of comet-ml
             'api_key': 'xK18bJy5xiPuPf9Dptr43ZuMk',
