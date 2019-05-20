@@ -23,8 +23,13 @@ device = torch.device('cuda:{}'.format(config.cuda_id)
 model = PConvUNet(layer_size=config.layer_size).to(device)
 
 # Data Transformation
-img_tf = transforms.ToTensor()
-mask_tf = transforms.ToTensor()
+img_tf = transforms.Compose([
+            transforms.ToTensor()
+            ])
+mask_tf = transforms.Compose([
+            transforms.RandomResizedCrop(256),
+            transforms.ToTensor()
+            ])
 
 # Define the Validation set
 dataset_val = Places2(config.img_root,
