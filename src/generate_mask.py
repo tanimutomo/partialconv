@@ -110,11 +110,13 @@ class MaskGenerator():
 
 
 if __name__ == '__main__':
+    NUM_MASK = 5000
+    DIR_NAME = 'val_mask'
     mask_generator = MaskGenerator(256, 256, channels=3, rand_seed=None, filepath=None)
 
-    for idx in range(10):
+    for idx in range(NUM_MASK):
         mask = mask_generator.sample() * 255
-        cv2.imwrite('data/mask/{}.png'.format(idx), mask)
+        cv2.imwrite('data/{}/{}.png'.format(DIR_NAME, idx), mask)
         # print(mask.shape, mask.dtype, mask.min(), mask.mean(), mask.max())
 
         # mask = cv2.imread('data/mask/{}.png'.format(idx))
