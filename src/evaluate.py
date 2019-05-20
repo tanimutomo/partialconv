@@ -4,6 +4,8 @@ from torchvision.utils import save_image
 
 
 def evaluate(model, dataset, device, filename, experiment=None):
+    print('Start the evaluation')
+    model.eval()
     image, mask, gt = zip(*[dataset[i] for i in range(8)])
     image = torch.stack(image)
     mask = torch.stack(mask)
