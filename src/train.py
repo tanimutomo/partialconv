@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from .utils import save_ckpt, to_item
+from .utils import save_ckpt, to_items
 from .evaluate import evaluate
 
 
