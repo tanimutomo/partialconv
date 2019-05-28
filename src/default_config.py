@@ -1,4 +1,3 @@
-
 def get_config():
     return  {
             ### EXECUTION SETTING ###
@@ -15,11 +14,17 @@ def get_config():
 
             ### TRAINING PARAMETERS ###
             # the number of max iteration
-            'max_iter': 1e+6,
+            'max_iter': 5e+5,
             # the batch size
-            'batch_size': 4,
+            'batch_size': 16,
+
+            ### DATA AUGMENTATION ###
+            # the mask augmentaiton flag
+            'mask_augment': False,
+
+            ### NETWORK SETTING ###
             # UNet layer size
-            'layer_size': 6,
+            'layer_size': 7,
 
             ### LOSS PARAMETERS ###
             'valid_coef': 1.0,
@@ -28,7 +33,7 @@ def get_config():
             'perc_coef': 0.05,
             'style_coef': 120.0,
             # total variation calcuration method ('mean' or 'sum')
-            'tv_loss': 'sum',
+            'tv_loss': 'mean',
 
             ### OPTIMIZATION PARAMETERS ###
             'optim': 'Adam',
@@ -39,11 +44,11 @@ def get_config():
 
             ### LOG INTERVALS ###
             # viaulizing the output images
-            'vis_interval': 5000,
+            'vis_interval': 1000,
             # saving the model
             'save_model_interval': 50000,
             # printing the losses to standard output line
-            'log_interval': 10,
+            'log_interval': 100,
 
             ### DIRECTORY PATH ###
             'data_root': 'data',

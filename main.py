@@ -31,10 +31,15 @@ model = PConvUNet(finetune=config.finetune,
 img_tf = transforms.Compose([
             transforms.ToTensor()
             ])
-mask_tf = transforms.Compose([
-            transforms.RandomResizedCrop(256),
-            transforms.ToTensor()
-            ])
+if config.mask_augment:
+    mask_tf = transforms.Compose([
+                transforms.RandomResizedCrop(256),
+                transforms.ToTensor()
+                ])
+else:
+    mask_tf = transforms.Compose([
+                transforms.ToTensor()
+                ])
 
 # Define the Validation set
 print('Loading the Validation Dataset...')
