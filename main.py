@@ -16,16 +16,21 @@ from src.utils import Config, load_ckpt, create_ckpt_dir
 config_dict = get_config()
 config = Config(config_dict)
 config.ckpt = create_ckpt_dir()
-print('Check Point is "{}"'.format(config.ckpt))
+print("Check Point is '{}'".format(config.ckpt))
 
 # Define the used device
-device = torch.device('cuda:{}'.format(config.cuda_id)
-                      if torch.cuda.is_available() else 'cpu')
+device = torch.device("cuda:{}".format(config.cuda_id)
+                      if torch.cuda.is_available() else "cpu")
 
 # Define the model
-print('Loading the Model...')
+print("Loading the Model...")
 model = PConvUNet(finetune=config.finetune,
-                  layer_size=config.layer_size).to(device)
+                  layer_size=config.layer_size)
+if config.finetune:
+    model.load_state_dict(torch.load(config.finetune))
+model.to(device)
+
+
 
 # Data Transformation
 img_tf = transforms.Compose([
@@ -42,17 +47,17 @@ else:
                 ])
 
 # Define the Validation set
-print('Loading the Validation Dataset...')
+print("Loading the Validation Dataset...")
 dataset_val = Places2(config.data_root,
                       img_tf,
                       mask_tf,
-                      data='val')
+                      data="val")
 
 # Set the configuration for training
-if config.mode == 'train':
+if config.mode == "train":
     # set the comet-ml
     if config.comet:
-        print('Connecting to Comet ML...')
+        print("Connecting to Comet ML...")
         experiment = Experiment(api_key=config.api_key,
                                 project_name=config.project_name,
                                 workspace=config.workspace)
@@ -61,22 +66,22 @@ if config.mode == 'train':
         experiment = None
 
     # Define the Places2 Dataset and Data Loader
-    print('Loading the Training Dataset...')
+    print("Loading the Training Dataset...")
     dataset_train = Places2(config.data_root,
                             img_tf,
                             mask_tf,
-                            data='train')
+                            data="train")
 
     # Define the Loss fucntion
     criterion = InpaintingLoss(VGG16FeatureExtractor(),
                                tv_loss=config.tv_loss).to(device)
     # Define the Optimizer
     lr = config.finetune_lr if config.finetune else config.initial_lr
-    if config.optim == 'Adam':
+    if config.optim == "Adam":
         optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()),
                                      lr=lr,
                                      weight_decay=config.weight_decay)
-    elif config.optim == 'SGD':
+    elif config.optim == "SGD":
         optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()),
                                     lr=lr,
                                     momentum=config.momentum,
@@ -84,13 +89,13 @@ if config.mode == 'train':
 
     start_iter = 0
     if config.resume:
-        print('Loading the trained params and the state of optimizer...')
+        print("Loading the trained params and the state of optimizer...")
         start_iter = load_ckpt(config.resume,
-                               [('model', model)],
-                               [('optimizer', optimizer)])
+                               [("model", model)],
+                               [("optimizer", optimizer)])
         for param_group in optimizer.param_groups:
-            param_group['lr'] = lr
-        print('Starting from iter ', start_iter)
+            param_group["lr"] = lr
+        print("Starting from iter ", start_iter)
 
     trainer = Trainer(start_iter, config, device, model, dataset_train,
                       dataset_val, criterion, optimizer, experiment=experiment)
@@ -101,7 +106,7 @@ if config.mode == 'train':
         trainer.iterate(config.num_iter)
 
 # Set the configuration for testing
-elif config.mode == 'test':
+elif config.mode == "test":
     # <model load the trained weights>
     evaluate(model, dataset_val)
 

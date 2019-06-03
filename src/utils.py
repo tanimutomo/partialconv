@@ -7,12 +7,10 @@ import torch.nn as nn
 
 def create_ckpt_dir():
     now = datetime.datetime.today()
-    ckpt_dir = 'ckpt/{}{}_{}{}_{}'.format(now.month, now.day,
-                                          now.hour, now.minute,
-                                          now.second)
+    ckpt_dir = "ckpt/{0:%m%d_%H%M_%S}".format(now)
     os.mkdir(ckpt_dir)
-    os.mkdir(os.path.join(ckpt_dir, 'val_vis'))
-    os.mkdir(os.path.join(ckpt_dir, 'models'))
+    os.mkdir(os.path.join(ckpt_dir, "val_vis"))
+    os.mkdir(os.path.join(ckpt_dir, "models"))
     return ckpt_dir
 
 
@@ -54,7 +52,7 @@ def conf_to_param(config: dict) -> dict:
 
 
 def get_state_dict_on_cpu(obj):
-    cpu_device = torch.device('cpu')
+    cpu_device = torch.device("cpu")
     state_dict = obj.state_dict()
     for key in state_dict.keys():
         state_dict[key] = state_dict[key].to(cpu_device)
@@ -62,7 +60,7 @@ def get_state_dict_on_cpu(obj):
 
 
 def save_ckpt(ckpt_name, models, optimizers, n_iter):
-    ckpt_dict = {'n_iter': n_iter}
+    ckpt_dict = {"n_iter": n_iter}
     for prefix, model in models:
         ckpt_dict[prefix] = get_state_dict_on_cpu(model)
 
@@ -79,4 +77,4 @@ def load_ckpt(ckpt_name, models, optimizers=None):
     if optimizers is not None:
         for prefix, optimizer in optimizers:
             optimizer.load_state_dict(ckpt_dict[prefix])
-    return ckpt_dict['n_iter']
+    return ckpt_dict["n_iter"]
