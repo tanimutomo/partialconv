@@ -27,7 +27,7 @@ print("Loading the Model...")
 model = PConvUNet(finetune=config.finetune,
                   layer_size=config.layer_size)
 if config.finetune:
-    model.load_state_dict(torch.load(config.finetune))
+    model.load_state_dict(torch.load(config.finetune)['model'])
 model.to(device)
 
 
