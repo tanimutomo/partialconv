@@ -112,7 +112,6 @@ dmypy.json
 
 # mine
 *.swp
-*.png
 data/
 ckpt/
 src/config.py
