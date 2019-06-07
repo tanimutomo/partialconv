@@ -1,4 +1,4 @@
-# [WIP] PyTorch Partial Convolution Inpainting
+# PyTorch Partial Convolution Inpainting
 This is the Re-implementation of "Image Inpainting for Irregular Holes Using Partial Convolutions".
 
 This is **NOT** an official implementation by the author.
