@@ -3,6 +3,11 @@ This is the Re-implementation of "Image Inpainting for Irregular Holes Using Par
 
 This is **NOT** an official implementation by the author.
 
+## Result
+![result](pconv_result.png)
+From top to bottom, The input image, The mask image, The raw output, The outpu with ground truth except for mask area, and the ground truth image.
+
+
 ## Information
 
 ### [Original Paper](http://openaccess.thecvf.com/content_ECCV_2018/papers/Guilin_Liu_Image_Inpainting_for_ECCV_2018_paper.pdf)
@@ -26,7 +31,4 @@ I refered the following repositories for this implementation. This implementatio
 - https://github.com/MathiasGruber/PConv-Keras
 - https://github.com/naoto0804/pytorch-inpainting-with-partial-conv/
 
-
-
-## Usage
 
