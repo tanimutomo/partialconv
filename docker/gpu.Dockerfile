@@ -39,6 +39,7 @@ RUN apt-get update && apt-get install -y \
 RUN ${PIP} install --upgrade \
     pip \
     setuptools
+RUN pip install jupyter
 
 WORKDIR /app
 ADD . /app

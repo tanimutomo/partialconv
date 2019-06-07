@@ -31,7 +31,8 @@ class Trainer:
                 self.report(step+self.stepped, loss_dict)
 
             # evaluation
-            if (step+self.stepped + 1) % self.config.vis_interval == 0:
+            if (step+self.stepped + 1) % self.config.vis_interval == 0 \
+                    or step == 0 or step + self.stepped == 0:
                 # set the model to evaluation mode
                 self.model.eval()
                 self.evaluate(self.model, self.dataset_val, self.device,

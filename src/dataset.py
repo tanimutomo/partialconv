@@ -25,8 +25,25 @@ class Places2(Dataset):
         return len(self.paths)
 
     def __getitem__(self, index):
-        img = Image.open(self.paths[index])
+        img = self._load_img(self.paths[index])
         img = self.img_transform(img.convert('RGB'))
         mask = Image.open(self.mask_paths[random.randint(0, self.N_mask - 1)])
         mask = self.mask_transform(mask.convert('RGB'))
         return img * mask, mask, img
+
+    def _load_img(self, path):
+        """
+        For dealing with the error of loading image which is occured by the loaded image has no data.
+        """
+        try:
+            img = Image.open(path)
+        except:
+            extension = path.split('.')[-1]
+            for i in range(10):
+                new_path = path.split('.')[0][:-1] + str(i) + '.' + extension
+                try:
+                    img = Image.open(new_path)
+                    break
+                except:
+                    continue
+        return img

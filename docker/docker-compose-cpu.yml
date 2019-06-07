@@ -1,9 +1,11 @@
 version: '3'
 services:
   experiment:
+    ports:
+    - 8888:8888
     volumes:
-      - ..:/app
+    - ..:/app
     build:
       context: .
       dockerfile: cpu.Dockerfile
-    image: tf_cpu_sample
+    image: tanimu/partialconv
