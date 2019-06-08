@@ -2,7 +2,6 @@ from comet_ml import Experiment
 
 import torch
 from torchvision import transforms
-from torch.utils.data import DataLoader
 
 from src.config import get_config
 from src.dataset import Places2
@@ -29,7 +28,6 @@ model = PConvUNet(finetune=config.finetune,
 if config.finetune:
     model.load_state_dict(torch.load(config.finetune)['model'])
 model.to(device)
-
 
 
 # Data Transformation
@@ -78,11 +76,13 @@ if config.mode == "train":
     # Define the Optimizer
     lr = config.finetune_lr if config.finetune else config.initial_lr
     if config.optim == "Adam":
-        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()),
+        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad,
+                                            model.parameters()),
                                      lr=lr,
                                      weight_decay=config.weight_decay)
     elif config.optim == "SGD":
-        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()),
+        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad,
+                                           model.parameters()),
                                     lr=lr,
                                     momentum=config.momentum,
                                     weight_decay=config.weight_decay)
@@ -107,6 +107,6 @@ if config.mode == "train":
 
 # Set the configuration for testing
 elif config.mode == "test":
+    pass
     # <model load the trained weights>
-    evaluate(model, dataset_val)
-
+    # evaluate(model, dataset_val)
