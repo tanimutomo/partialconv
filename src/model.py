@@ -8,14 +8,17 @@ class PartialConv2d(nn.Conv2d):
                  stride=1, padding=0, dilation=1, groups=1, bias=True,
                  padding_mode='zeros'):
         # Inherit the parent class (Conv2d)
-        super(PartialConv2d, self).__init__(in_channels, out_channels, kernel_size,
-                                            stride=stride, padding=padding, dilation=dilation,
-                                            groups=groups, bias=bias, padding_mode=padding_mode)
+        super(PartialConv2d, self).__init__(in_channels, out_channels,
+                                            kernel_size, stride=stride,
+                                            padding=padding, dilation=dilation,
+                                            groups=groups, bias=bias,
+                                            padding_mode=padding_mode)
         # Define the kernel for updating mask
-        self.mask_kernel = torch.ones(self.out_channels, self.in_channels, 
+        self.mask_kernel = torch.ones(self.out_channels, self.in_channels,
                                       self.kernel_size[0], self.kernel_size[1])
         # Define sum1 for renormalization
-        self.sum1 = self.mask_kernel.shape[1] * self.mask_kernel.shape[2] * self.mask_kernel.shape[3]
+        self.sum1 = self.mask_kernel.shape[1] * self.mask_kernel.shape[2] \
+                                              * self.mask_kernel.shape[3]
         # Define the updated mask
         self.update_mask = None
         # Define the mask ratio (sum(1) / sum(M))
@@ -27,9 +30,13 @@ class PartialConv2d(nn.Conv2d):
         with torch.no_grad():
             if self.mask_kernel.type() != input.type():
                 self.mask_kernel = self.mask_kernel.to(input)
-            # Create the updated mask for calcurating mask_ratio (sum(1) / sum(M))
-            self.update_mask = F.conv2d(mask, self.mask_kernel, bias=None, stride=self.stride, 
-                                        padding=self.padding, dilation=self.dilation, groups=1)
+            # Create the updated mask
+            # for calcurating mask ratio (sum(1) / sum(M))
+            self.update_mask = F.conv2d(mask, self.mask_kernel,
+                                        bias=None, stride=self.stride,
+                                        padding=self.padding,
+                                        dilation=self.dilation,
+                                        groups=1)
             # calcurate mask ratio (sum(1) / sum(M))
             self.mask_ratio = self.sum1 / (self.update_mask + 1e-8)
             self.update_mask = torch.clamp(self.update_mask, 0, 1)
@@ -37,7 +44,7 @@ class PartialConv2d(nn.Conv2d):
 
         # calcurate WT . (X * M)
         conved = torch.mul(input, mask)
-        conved = F.conv2d(conved, self.weight, self.bias, self.stride, 
+        conved = F.conv2d(conved, self.weight, self.bias, self.stride,
                           self.padding, self.dilation, self.groups)
 
         if self.bias is not None:
@@ -127,30 +134,33 @@ class PConvUNet(nn.Module):
         self.dec_5 = PConvActiv(512+512, 512, dec=True, active='leaky')
         self.dec_4 = PConvActiv(512+256, 256, dec=True, active='leaky')
         self.dec_3 = PConvActiv(256+128, 128, dec=True, active='leaky')
-        self.dec_2 = PConvActiv( 128+64,  64, dec=True, active='leaky')
-        self.dec_1 = PConvActiv(   64+3,   3, dec=True, bn=False, active=None, conv_bias=True)
+        self.dec_2 = PConvActiv(128+64,   64, dec=True, active='leaky')
+        self.dec_1 = PConvActiv(64+3,      3, dec=True, bn=False,
+                                active=None, conv_bias=True)
 
     def forward(self, input, mask):
         enc_f, enc_m = [input], [mask]
         for layer_num in range(1, self.layer_size+1):
             if layer_num == 1:
-                feature, update_mask = getattr(self, 'enc_{}'.format(layer_num))(input, mask)
+                feature, update_mask = \
+                    getattr(self, 'enc_{}'.format(layer_num))(input, mask)
             else:
                 enc_f.append(feature)
                 enc_m.append(update_mask)
-                feature, update_mask = getattr(self, 'enc_{}'.format(layer_num))(feature, update_mask)
+                feature, update_mask = \
+                    getattr(self, 'enc_{}'.format(layer_num))(feature,
+                                                              update_mask)
 
         assert len(enc_f) == self.layer_size
 
         for layer_num in reversed(range(1, self.layer_size+1)):
             feature, update_mask = getattr(self, 'dec_{}'.format(layer_num))(
                     feature, update_mask, enc_f.pop(), enc_m.pop())
-            
+
         return feature, mask
 
     def train(self, mode=True):
-        """
-        Override the default train() to freeze the BN parameters
+        """Override the default train() to freeze the BN parameters
         In initial training, BN set to True
         In fine-tuning stage, BN set to False
         """
@@ -180,7 +190,6 @@ if __name__ == '__main__':
     assert (torch.sum(torch.isnan(conv.weight.grad)).item() == 0)
     assert (torch.sum(torch.isnan(conv.bias.grad)).item() == 0)
 
-
     model = PConvUNet()
     before = model.enc_5.conv.weight[0][0]
     print(before)
@@ -188,4 +197,3 @@ if __name__ == '__main__':
     # after = model.enc_5.conv.weight[0][0]
     # print(after - before)
     output, out_mask = model(input, mask)
-

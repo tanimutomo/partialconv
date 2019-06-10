@@ -1,12 +1,10 @@
-import torch
-import torch.nn as nn
 from torch.utils.data import DataLoader
 
 from .utils import save_ckpt, to_items
 from .evaluate import evaluate
 
 
-class Trainer:
+class Trainer(object):
     def __init__(self, step, config, device, model, dataset_train,
                  dataset_val, criterion, optimizer, experiment):
         self.stepped = step
@@ -21,7 +19,7 @@ class Trainer:
         self.optimizer = optimizer
         self.evaluate = evaluate
         self.experiment = experiment
-        
+
     def iterate(self, num_iter):
         print('Start the training')
         for step, (input, mask, gt) in enumerate(self.dataloader_train):
@@ -36,14 +34,16 @@ class Trainer:
                 # set the model to evaluation mode
                 self.model.eval()
                 self.evaluate(self.model, self.dataset_val, self.device,
-                              '{}/val_vis/{}.png'.format(self.config.ckpt, step+self.stepped),
+                              '{}/val_vis/{}.png'.format(self.config.ckpt,
+                                                         step+self.stepped),
                               self.experiment)
 
             # save the model
             if (step+self.stepped + 1) % self.config.save_model_interval == 0 \
                     or (step + 1) == self.config.max_iter:
                 print('Saving the model...')
-                save_ckpt('{}/models/{}.pth'.format(self.config.ckpt, step+self.stepped + 1),
+                save_ckpt('{}/models/{}.pth'.format(self.config.ckpt,
+                                                    step+self.stepped + 1),
                           [('model', self.model)],
                           [('optimizer', self.optimizer)],
                           step+self.stepped + 1)
@@ -75,11 +75,11 @@ class Trainer:
 
         loss_dict['total'] = loss
         return to_items(loss_dict)
-        
+
     def report(self, step, loss_dict):
-        print('[STEP: {:>6}] | Valid Loss: {:.6f} | Hole Loss: {:.6f}'\
-                '| TV Loss: {:.6f} | Perc Loss: {:.6f}'\
-                '| Style Loss: {:.6f} | Total Loss: {:.6f}'.format(
+        print('[STEP: {:>6}] | Valid Loss: {:.6f} | Hole Loss: {:.6f}',
+              '| TV Loss: {:.6f} | Perc Loss: {:.6f}',
+              '| Style Loss: {:.6f} | Total Loss: {:.6f}'.format(
                         step, loss_dict['valid'], loss_dict['hole'],
                         loss_dict['tv'], loss_dict['perc'],
                         loss_dict['style'], loss_dict['total']))

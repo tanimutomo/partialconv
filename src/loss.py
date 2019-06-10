@@ -38,8 +38,10 @@ class InpaintingLoss(nn.Module):
         for i in range(3):
             perc_loss += self.l1(feats_out[i], feats_gt[i])
             perc_loss += self.l1(feats_comp[i], feats_gt[i])
-            style_loss += self.l1(gram_matrix(feats_out[i]), gram_matrix(feats_gt[i]))
-            style_loss += self.l1(gram_matrix(feats_comp[i]), gram_matrix(feats_gt[i]))
+            style_loss += self.l1(gram_matrix(feats_out[i]),
+                                  gram_matrix(feats_gt[i]))
+            style_loss += self.l1(gram_matrix(feats_comp[i]),
+                                  gram_matrix(feats_gt[i]))
 
         return {'valid': valid_loss,
                 'hole': hole_loss,
@@ -113,16 +115,20 @@ def dialation_holes(hole_mask):
 
 
 def total_variation_loss(image, mask, method):
-    hole_mask = 1-mask
-    dilated_holes=dialation_holes(hole_mask)
-    colomns_in_Pset=dilated_holes[:, :, :, 1:] * dilated_holes[:, :, :, :-1]
-    rows_in_Pset=dilated_holes[:, :, 1:, :] * dilated_holes[:, :, :-1:, :]
+    hole_mask = 1 - mask
+    dilated_holes = dialation_holes(hole_mask)
+    colomns_in_Pset = dilated_holes[:, :, :, 1:] * dilated_holes[:, :, :, :-1]
+    rows_in_Pset = dilated_holes[:, :, 1:, :] * dilated_holes[:, :, :-1:, :]
     if method == 'sum':
-        loss = torch.sum(torch.abs(colomns_in_Pset*(image[:, :, :, 1:] - image[:, :, :, :-1]))) + \
-            torch.sum(torch.abs(rows_in_Pset*(image[:, :, :1 :] - image[:, :, -1:, :])))
+        loss = torch.sum(torch.abs(colomns_in_Pset*(
+                    image[:, :, :, 1:] - image[:, :, :, :-1]))) + \
+            torch.sum(torch.abs(rows_in_Pset*(
+                    image[:, :, :1, :] - image[:, :, -1:, :])))
     else:
-        loss = torch.mean(torch.abs(colomns_in_Pset*(image[:, :, :, 1:] - image[:, :, :, :-1]))) + \
-            torch.mean(torch.abs(rows_in_Pset*(image[:, :, :1 :] - image[:, :, -1:, :])))
+        loss = torch.mean(torch.abs(colomns_in_Pset*(
+                    image[:, :, :, 1:] - image[:, :, :, :-1]))) + \
+            torch.mean(torch.abs(rows_in_Pset*(
+                    image[:, :, :1, :] - image[:, :, -1:, :])))
     return loss
 
 
