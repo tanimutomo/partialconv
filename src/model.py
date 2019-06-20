@@ -26,10 +26,10 @@ class PartialConv2d(nn.Conv2d):
         # Initialize the weights for image convolution
         torch.nn.init.xavier_uniform_(self.weight)
 
-    def forward(self, input, mask):
+    def forward(self, img, mask):
         with torch.no_grad():
-            if self.mask_kernel.type() != input.type():
-                self.mask_kernel = self.mask_kernel.to(input)
+            if self.mask_kernel.type() != img.type():
+                self.mask_kernel = self.mask_kernel.to(img)
             # Create the updated mask
             # for calcurating mask ratio (sum(1) / sum(M))
             self.update_mask = F.conv2d(mask, self.mask_kernel,
@@ -43,7 +43,7 @@ class PartialConv2d(nn.Conv2d):
             self.mask_ratio = torch.mul(self.mask_ratio, self.update_mask)
 
         # calcurate WT . (X * M)
-        conved = torch.mul(input, mask)
+        conved = torch.mul(img, mask)
         conved = F.conv2d(conved, self.weight, self.bias, self.stride,
                           self.padding, self.dilation, self.groups)
 
@@ -82,13 +82,18 @@ class PConvActiv(nn.Module):
         super().__init__()
         # Define the partial conv layer
         if sample == 'down-7':
-            self.conv = PartialConv2d(in_ch, out_ch, 7, 2, 3, bias=conv_bias)
+            params = {"kernel_size": 7, "stride": 2, "padding": 3}
         elif sample == 'down-5':
-            self.conv = PartialConv2d(in_ch, out_ch, 5, 2, 2, bias=conv_bias)
+            params = {"kernel_size": 5, "stride": 2, "padding": 2}
         elif sample == 'down-3':
-            self.conv = PartialConv2d(in_ch, out_ch, 3, 2, 1, bias=conv_bias)
+            params = {"kernel_size": 3, "stride": 2, "padding": 1}
         else:
-            self.conv = PartialConv2d(in_ch, out_ch, 3, 1, 1, bias=conv_bias)
+            params = {"kernel_size": 3, "stride": 1, "padding": 1}
+        self.conv = PartialConv2d(in_ch, out_ch,
+                                  params["kernel_size"],
+                                  params["stride"],
+                                  params["padding"],
+                                  bias=conv_bias)
 
         # Define other layers
         if dec:
@@ -100,12 +105,12 @@ class PConvActiv(nn.Module):
         elif active == 'leaky':
             self.activation = nn.LeakyReLU(negative_slope=0.2)
 
-    def forward(self, input, mask, enc_input=None, enc_mask=None):
+    def forward(self, img, mask, enc_img=None, enc_mask=None):
         if hasattr(self, 'upcat'):
-            out, update_mask = self.upcat(input, enc_input, mask, enc_mask)
+            out, update_mask = self.upcat(img, enc_img, mask, enc_mask)
             out, update_mask = self.conv(out, update_mask)
         else:
-            out, update_mask = self.conv(input, mask)
+            out, update_mask = self.conv(img, mask)
         if hasattr(self, 'bn'):
             out = self.bn(out)
         if hasattr(self, 'activation'):
@@ -138,12 +143,12 @@ class PConvUNet(nn.Module):
         self.dec_1 = PConvActiv(64+3,      3, dec=True, bn=False,
                                 active=None, conv_bias=True)
 
-    def forward(self, input, mask):
-        enc_f, enc_m = [input], [mask]
+    def forward(self, img, mask):
+        enc_f, enc_m = [img], [mask]
         for layer_num in range(1, self.layer_size+1):
             if layer_num == 1:
                 feature, update_mask = \
-                    getattr(self, 'enc_{}'.format(layer_num))(input, mask)
+                    getattr(self, 'enc_{}'.format(layer_num))(img, mask)
             else:
                 enc_f.append(feature)
                 enc_m.append(update_mask)
@@ -165,28 +170,29 @@ class PConvUNet(nn.Module):
         In fine-tuning stage, BN set to False
         """
         super().train(mode)
-        if self.freeze_enc_bn:
-            for name, module in self.named_modules():
-                if isinstance(module, nn.BatchNorm2d) and 'enc' in name:
-                    module.eval()
+        if not self.freeze_enc_bn:
+            return 
+        for name, module in self.named_modules():
+            if isinstance(module, nn.BatchNorm2d) and 'enc' in name:
+                module.eval()
 
 
 if __name__ == '__main__':
     from utils import init_xavier
     size = (1, 3, 512, 512)
-    input = torch.ones(size)
+    img = torch.ones(size)
     mask = torch.ones(size)
     mask[:, :, 128:-128, :][:, :, :, 128:-128] = 0
 
     conv = PartialConv2d(3, 3, 3, 1, 1)
     criterion = nn.L1Loss()
-    input.requires_grad = True
+    img.requires_grad = True
 
-    output, out_mask = conv(input, mask)
+    output, out_mask = conv(img, mask)
     loss = criterion(output, torch.randn(size))
     loss.backward()
 
-    # print(input.grad[0])
+    # print(img.grad[0])
     assert (torch.sum(torch.isnan(conv.weight.grad)).item() == 0)
     assert (torch.sum(torch.isnan(conv.bias.grad)).item() == 0)
 
@@ -196,4 +202,4 @@ if __name__ == '__main__':
     # model.apply(init_xavier)
     # after = model.enc_5.conv.weight[0][0]
     # print(after - before)
-    output, out_mask = model(input, mask)
+    output, out_mask = model(img, mask)

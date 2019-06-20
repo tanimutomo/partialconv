@@ -20,7 +20,7 @@ class Trainer(object):
         self.evaluate = evaluate
         self.experiment = experiment
 
-    def iterate(self, num_iter):
+    def iterate(self):
         print('Start the training')
         for step, (input, mask, gt) in enumerate(self.dataloader_train):
             loss_dict = self.train(step+self.stepped, input, mask, gt)

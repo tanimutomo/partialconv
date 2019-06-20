@@ -1,8 +1,9 @@
-import os
 import datetime
+import os
 import torch
 
 import torch.nn as nn
+import oyaml as yaml
 
 
 def create_ckpt_dir():
@@ -23,14 +24,16 @@ def _to_item(item):
 
 
 class Config(dict):
-    def __init__(self, config):
+    def __init__(self, conf_file):
+        with open(conf_file, "r") as f:
+            config = yaml.safe_load(f)
         self._conf = config
- 
-    def __getattr__(self, name):
-        if self._conf.get(name) is not None:
-            return self._conf[name]
 
-        return None
+    def __getattr__(self, name):
+        if self._conf.get(name) is None:
+            return None
+
+        return self._conf[name]
 
 
 def conf_to_param(config: dict) -> dict:
@@ -46,7 +49,7 @@ def conf_to_param(config: dict) -> dict:
         val = config.pop(target)
         config.update(val)
     for target in rm_keys:
-        del config[targe]
+        del config[target]
 
     return config
 
