@@ -77,8 +77,8 @@ class Trainer(object):
         return to_items(loss_dict)
 
     def report(self, step, loss_dict):
-        print('[STEP: {:>6}] | Valid Loss: {:.6f} | Hole Loss: {:.6f}',
-              '| TV Loss: {:.6f} | Perc Loss: {:.6f}',
+        print('[STEP: {:>6}] | Valid Loss: {:.6f} | Hole Loss: {:.6f}'\
+              '| TV Loss: {:.6f} | Perc Loss: {:.6f}'\
               '| Style Loss: {:.6f} | Total Loss: {:.6f}'.format(
                         step, loss_dict['valid'], loss_dict['hole'],
                         loss_dict['tv'], loss_dict['perc'],
