@@ -2,21 +2,28 @@
 # The using GPU ID
 cuda_id: 0
 # whether you use comet-ml for visualizing the training procedure
-comet: False
-# The Running mode ('train' or 'test')
+comet: True
+# The Running mode (train or test)
 mode: train
-# fine-tuning
+# fine-tuning specify the ckpt dir name you want to load the model params.
+# if you want to turn off the fine-tuning mode Set to .
 finetune: False
 # The state path which you want to resume the training
 resume: False
 
 ### TRAINING PARAMETERS ###
 # the number of max iteration
-max_iter: 1000000
+max_iter: 200000
 # the batch size
-batch_size: 4
+batch_size: 18
+
+### DATA AUGMENTATION ###
+# the mask augmentaiton flag
+mask_augment: False
+
+### NETWORK SETTING ###
 # UNet layer size
-layer_size: 6
+layer_size: 7
 
 ### LOSS PARAMETERS ###
 valid_coef: 1.0
@@ -24,23 +31,23 @@ hole_coef: 6.0
 tv_coef: 0.1
 perc_coef: 0.05
 style_coef: 120.0
-# total variation calcuration method (mean' or 'sum')
-tv_loss: sum
+# total variation calcuration method (mean or sum)
+tv_loss: mean
 
 ### OPTIMIZATION PARAMETERS ###
 optim: Adam
 initial_lr: 0.0002
-finetune_lr: 0.00005
+finetune_lr: 0.0005
 momentum: 0
 weight_decay: 0
 
 ### LOG INTERVALS ###
 # viaulizing the output images
-vis_interval: 5000
+vis_interval: 1000
 # saving the model
 save_model_interval: 50000
 # printing the losses to standard output line
-log_interval: 10
+log_interval: 100
 
 ### DIRECTORY PATH ###
 data_root: data
