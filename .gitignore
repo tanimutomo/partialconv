@@ -115,3 +115,4 @@ dmypy.json
 data/
 ckpt/
 src/config.py
+config.yml

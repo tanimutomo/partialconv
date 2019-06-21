@@ -2,9 +2,7 @@ from comet_ml import Experiment
 
 import torch
 from torchvision import transforms
-from torch.utils.data import DataLoader
 
-from src.config import get_config
 from src.dataset import Places2
 from src.model import PConvUNet
 from src.loss import InpaintingLoss, VGG16FeatureExtractor
@@ -13,8 +11,7 @@ from src.utils import Config, load_ckpt, create_ckpt_dir
 
 
 # set the config
-config_dict = get_config()
-config = Config(config_dict)
+config = Config("config.yml")
 config.ckpt = create_ckpt_dir()
 print("Check Point is '{}'".format(config.ckpt))
 
@@ -29,7 +26,6 @@ model = PConvUNet(finetune=config.finetune,
 if config.finetune:
     model.load_state_dict(torch.load(config.finetune)['model'])
 model.to(device)
-
 
 
 # Data Transformation
@@ -78,11 +74,13 @@ if config.mode == "train":
     # Define the Optimizer
     lr = config.finetune_lr if config.finetune else config.initial_lr
     if config.optim == "Adam":
-        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()),
+        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad,
+                                            model.parameters()),
                                      lr=lr,
                                      weight_decay=config.weight_decay)
     elif config.optim == "SGD":
-        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()),
+        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad,
+                                           model.parameters()),
                                     lr=lr,
                                     momentum=config.momentum,
                                     weight_decay=config.weight_decay)
@@ -101,12 +99,12 @@ if config.mode == "train":
                       dataset_val, criterion, optimizer, experiment=experiment)
     if config.comet:
         with experiment.train():
-            trainer.iterate(config.num_iter)
+            trainer.iterate()
     else:
-        trainer.iterate(config.num_iter)
+        trainer.iterate()
 
 # Set the configuration for testing
 elif config.mode == "test":
+    pass
     # <model load the trained weights>
-    evaluate(model, dataset_val)
-
+    # evaluate(model, dataset_val)

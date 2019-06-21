@@ -3,3 +3,4 @@ torch==1.1.0
 torchvision
 pillow==5.4.1
 numpy==1.14.3
+oyaml
