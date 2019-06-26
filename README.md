@@ -8,6 +8,21 @@ This is **NOT** an official implementation by the author.
 From top to bottom, The input image, The mask image, The raw output, The outpu with ground truth except for mask area, and the ground truth image.
 
 
+## Quick Run
+### Download the pretrained model
+You can donwload the [pretrained model](https://drive.google.com/file/d/1sooo-BLSNRUGWG_AB-lxh7xHgJ2bS29a/view) which is the same as the model output the above images.  
+Please put the pretrained model file to `partialconv/`.
+
+### Run
+```
+python predict.py
+```
+or
+```
+python predict.py --img <image_path> --mask <mask_path> --model <model_path>
+```
+
+
 ## Information
 
 ### [Original Paper](http://openaccess.thecvf.com/content_ECCV_2018/papers/Guilin_Liu_Image_Inpainting_for_ECCV_2018_paper.pdf)
