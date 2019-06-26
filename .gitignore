@@ -111,8 +111,11 @@ venv.bak/
 dmypy.json
 
 # mine
+.DS_Store
 *.swp
+*.pth
 data/
 ckpt/
 src/config.py
 config.yml
+
