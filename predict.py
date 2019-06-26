@@ -1,9 +1,13 @@
+import os
+from PIL import Image
 import torch
 from torchvision import transforms
-from PIL import Image
 
 from src.model import PConvUNet
-from src.utils import Config, load_ckpt, create_ckpt_dir
+from src.utils import create_ckpt_dir
+
+# create the checkpoint directory
+ckpt = create_ckpt_dir()
 
 # Define the used device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -38,5 +42,11 @@ model.eval()
 with torch.no_grad():
     output, _ = model(img.to(device), mask.to(device))
 output = output.to(torch.device('cpu'))
-output_comp = mask * image + (1 - mask) * output
+output_comp = mask * img + (1 - mask) * output
 
+# save the output image
+out = output_comp.numpy()
+to_pil = transforms.TOPILImage()
+out = to_pil(out)
+img_name = IMAGE_PATH.split('/')[-1]
+out.save(os.path.join(ckpt, "out_{}".format(img_name)))
