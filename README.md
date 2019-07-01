@@ -48,7 +48,7 @@ kronos build --gpu
 
 ## Quick Run
 ### Download the pretrained model
-You can donwload the [pretrained model](https://drive.google.com/file/d/1sooo-BLSNRUGWG_AB-lxh7xHgJ2bS29a/view) which is the same as the model output the above images.  
+You can donwload the [pretrained model](https://drive.google.com/file/d/1sooo-BLSNRUGWG_AB-lxh7xHgJ2bS29a/view?usp=sharing) which is the same as the model output the above images.  
 Please put the pretrained model file to `partialconv/`.
 
 ### Run
