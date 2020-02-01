@@ -116,6 +116,7 @@ dmypy.json
 *.pth
 data/
 ckpt/
-src/config.py
+.vscode/
+Pipfile
 config.yml
 
