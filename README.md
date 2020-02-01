@@ -4,7 +4,7 @@ This is the Re-implementation of "Image Inpainting for Irregular Holes Using Par
 This is **NOT** an official implementation by the author.
 
 ## Result
-![result](pconv_result.png)
+![result](./figs/pconv_result.png)
 From top to bottom, The input image, The mask image, The raw output, The outpu with ground truth except for mask area, and the ground truth image.
 
 
