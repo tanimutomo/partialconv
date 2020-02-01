@@ -15,7 +15,7 @@ git clone https://github.com/tanimutomo/partialconv.git
 ```
 
 ### Install requirements
-The required libraries are written in `partialconv/docker/cpu_requirements.txt`.  
+The required libraries are written in [`./requirements.txt`](./requirements.txt).  
 
 
 ## Quick Run
