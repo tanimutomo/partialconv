@@ -2,9 +2,9 @@
 # The using GPU ID
 cuda_id: 0
 # whether you use comet-ml for visualizing the training procedure
-comet: True
+comet: False
 # The Running mode (train or test)
-mode: train
+mode: test
 # fine-tuning specify the ckpt dir name you want to load the model params.
 # if you want to turn off the fine-tuning mode Set to .
 finetune: False
@@ -50,7 +50,7 @@ save_model_interval: 50000
 log_interval: 100
 
 ### DIRECTORY PATH ###
-data_root: data
+data_root: ~/data
 ckpt: ckpt
 
 ### COMET ML SETTING ###

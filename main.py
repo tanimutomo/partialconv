@@ -11,7 +11,7 @@ from src.utils import Config, load_ckpt, create_ckpt_dir
 
 
 # set the config
-config = Config("config.yml")
+config = Config("default_config.yml")
 config.ckpt = create_ckpt_dir()
 print("Check Point is '{}'".format(config.ckpt))
 
@@ -57,7 +57,7 @@ if config.mode == "train":
         experiment = Experiment(api_key=config.api_key,
                                 project_name=config.project_name,
                                 workspace=config.workspace)
-        experiment.log_parameters(config_dict)
+        experiment.log_parameters(config.__dict__)
     else:
         experiment = None
 
