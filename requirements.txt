@@ -1,6 +1,6 @@
 oyaml==0.9
 comet-ml==3.0.2
-pillow==6.2.2
+pillow==8.1.1
 numpy==1.14.3
 torch==1.1.0
 torchvision==0.3.0
