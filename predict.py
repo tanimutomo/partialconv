@@ -58,7 +58,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Specify the inputs")
     parser.add_argument('--img', type=str, default="examples/img0.jpg")
     parser.add_argument('--mask', type=str, default="examples/mask0.png")
-    parser.add_argument('--model', type=str, default="pretrained_pconv.pth")
+    parser.add_argument('--model', type=str, default="partialconv/pretrained_pconv.pth")
     parser.add_argument('--resize', type=strtobool, default=False)
     parser.add_argument('--gpu_id', type=int, default=0)
     args = parser.parse_args()
